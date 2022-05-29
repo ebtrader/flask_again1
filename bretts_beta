@@ -1,0 +1,117 @@
+https://www.brettsbeta.com/blog/2020/07/flask-on-dreamhost-shared-website-hosting/
+
+Flask on Dreamhost Shared Website Hosting
+This tutorial will guide you through deploying Flask on a Dreamhost shared plan using Passenger. Dreamhost has first-party technical notes for nearly every step in this process, this walkthrough simply clarifies and connects them into a step-by-step path. Thank you to Matt Carrier‘s excellent tutorial from 2013 for getting me to 90%, this is essentially just an updated version.
+
+Initial Setup
+First create a new domain or subdomain on your Dreamhost account – if you reuse a domain, this process will overwrite existing data. (If you don’t own a domain you can register within Dreamhost but a service like Hover.com will make moving easier if/when you outgrow Dreamhost.)
+
+Login to your Dreamhost admin panel
+Go to Domains -> Manage Domains in the left navmenu
+Click Add Hosting to a Domain / Sub-Domain button on the right.
+Fill in your Domain to host: with something fun like newproject.mydomain.com.
+Fill in the next options to your preference.
+Check the Passenger (Ruby/NodeJS/Python apps only) box. This is important.
+Click Fully host this domain
+Wait a few minutes while this domain is created.
+Refresh the Manage Domains page so you can see the new domain.
+Under the SECURITY column will be a link HTTPS Not Secure – click this
+Click the Select this certificate button under the LET’S ENCRYPT SSL CERTIFICATE card. Don’t worry, it is free.
+Install Python3
+Python 2.x was deprecated January 1, 2020 after a 14 year transition period but Dreamhost still defaults to it for most users. It is also good practice to install a custom, private version to isolate and control your environment from the server’s. The following procedure installs Python3 and changes your user path to default to it. This procedure closely follows Dreamhost’s own support document.
+
+SSH into your domain: ssh username@mydomain.com
+Go to your newly created project’s directory: cd newproject.mydomain.com
+Execute the following commands in order, one at a time. Some will take several minutes to complete. If a newer version Python3 exists, correct the links and names as appropriate:
+mkdir ~/py3_tmp
+cd ~/py3_tmp/
+wget https://www.python.org/ftp/python/3.8.2/Python-3.8.2.tgz
+tar zxvf Python-3.8.2.tgz
+cd Python-3.8.2
+./configure --prefix=$HOME/opt/python-3.8.2
+make
+make install
+echo 'export PATH=$HOME/opt/python-3.8.2/bin:$PATH' >> ~/.bash_profile
+The last command will set the default Python for this user. To activate it, reload your profile: . ~/.bash_profile
+Now check your work: which python3; double check: python3 --version; and triple-check: pip3 --version. You may delete the py3_tmp directory when you have verified everything.
+Install Flask within a virtual environment
+Using the private version of Python you’ve just installed, we now create a virtual environment and install Flask. A virtual environment ensures your code, libraries and extensions are isolated from the rest of the applications on the server. Dreamhost also has a KB article walking you through this. In brief:
+
+Make sure the latest pip is installed: python3 -m pip install --upgrade pip
+Install virtualenv: pip3 install virtualenv
+Check it: which virtualenv
+Type which python3 and use the output in the next step:
+Create the venv itself, using the path from the previous step: virtualenv -p /paste/path/from/above/python-3.8.2/bin/python3 venv
+Activate your venv: source venv/bin/activate
+and check again: python -V
+Your command prompt should now be prepended with the name of the venv, indicating all installations will happen within the venv. Next, Flask itself is easy to install:
+
+Make sure pip is updated: pip install --upgrade pip
+Install Flask: pip install Flask
+Install any other dependencies you will need, like requests, Flask-Login, Flask-Mail, Flask-SQLAlchemy, etc.
+Configure Passenger
+Passenger is an open source web and application server and gateway interface. Basically it is the connecting framework for web servers (which Dreamhost provides) to forward requests to web applications or frameworks written in Python (which you will write). Setup is a breeze:
+
+create a Passenger configuration file: nano passenger_wsgi.py (feel free to use vi or emacs or your preference. Don’t email me.)
+Enter the following into passenger_wsgi.py, making sure you replace ‘yourdomain.com’ with your information:
+import sys, os
+INTERP = os.path.join(os.environ['HOME'], 'yourdomain.com', 'venv', 'bin', 'python3')
+if sys.executable != INTERP:
+        os.execl(INTERP, INTERP, *sys.argv)
+sys.path.append(os.getcwd())
+
+from flask import Flask
+application = Flask(__name__)
+
+@application.route('/')
+def index():
+    return 'Hello from Passenger'
+Save and close this file.
+Make the file executable: chmod +x passenger_wsgi.py
+Create a restart button: mkdir tmp
+Restart: touch tmp/restart.txt
+At this point, everything should be running. Go check it: https://www.<yourdomain>.com will show the text, ‘Hello from Passenger’. If not, double-check everything above.
+
+Create your Flask App
+Now we’re going to make a real Flask application. (You will likely want start using your favorite IDE and upload the files to the server when finished rather than editing directly on the server. You will also likely want a local environment and to start a GIT repository. These steps are outside the scope of this tutorial.)
+
+Create a directory: mkdir app if you’re still in the server.
+Create a new file within app/ called __init__.py
+Enter the following and save:
+from flask import Flask
+
+app = Flask(__name__)
+
+from app import routes
+Create the file routes.py within app/
+Enter the following and save:
+from app import app
+
+@app.route('/')
+@app.route('/index')
+def index():
+    return "Hello from Flask!"
+Edit passenger_wsgi.py:
+import sys, os
+INTERP = os.path.join(os.environ['HOME'], 'yourdomain.com', 'venv', 'bin', 'python3')
+if sys.executable != INTERP:
+        os.execl(INTERP, INTERP, *sys.argv)
+sys.path.append(os.getcwd())
+
+sys.path.append('app')
+from app import app as application
+The project structure should look like this:
+mydomain.com/
+----venv/
+----app/
+--------init.py
+--------routes.py
+----passenger_wsgi.py
+
+Restart Flask: touch tmp/restart.txt
+And now go check your application again – you should see ‘Hello from Flask!’
+Build
+You now have a fully functional, if trivial, Flask app running on Dreamhost Shared webhosting.
+You can make some amazing software with SQL backends and complex frontends from here –
+I suggest Miguel Grinberg’s Flask Mega-Tutorial for the basics, or for data science applications,
+Data Visualization with Python and JavaScript is an excellent resource.
