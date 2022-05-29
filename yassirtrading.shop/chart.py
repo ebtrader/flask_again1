@@ -117,7 +117,7 @@ def graph():
     # fig1.show()
 
     fig1.update_layout(
-        title=ticker,
+        title=ticker, xaxis_rangeslider_visible=False
     )
 
     graphJSON = json.dumps(fig1, cls=plotly.utils.PlotlyJSONEncoder)
