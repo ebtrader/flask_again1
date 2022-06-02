@@ -63,10 +63,7 @@ def graph():
 
         ticker = details['ticker']
 
-        period = details['period']
-        interval = details['interval']
-
-        df = yf.download(tickers=ticker, period=period, interval=interval)
+        df = yf.download(tickers=ticker, period='6mo', interval='1d')
         #df = yf.download(tickers = ticker, start='2013-01-01', end='2014-12-31')
 
         df = df.reset_index()
@@ -132,4 +129,4 @@ def graph():
         graphJSON = json.dumps(fig1, cls=plotly.utils.PlotlyJSONEncoder)
 
         return render_template('neckline.html', graphJSON=graphJSON)
-    return render_template('dropdown.html')
+    return render_template('ticker.html')
