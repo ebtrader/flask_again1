@@ -36,11 +36,6 @@ application.config['MYSQL_DB'] = var
 
 mysql = MySQL(application)
 
-@application.route('/simple')
-def output_simple():
-    out_text = 'hello world now'
-    return render_template('output.html', arithmetic=out_text)
-
 @application.route('/chain')
 def opt_chain():
     return "Hello World"
