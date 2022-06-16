@@ -292,10 +292,8 @@ def dropdown_fn():
             nq_target = target
             tqqq_target = ((nq_target / nq_current - 1) * 3 + 1)* tqqq_current
             # print(tqqq_target)
-            # tqqq_display = str(tqqq_target)
-            tqqq_display = "{:.2f}".format(tqqq_target)
-            out_text = tqqq_display
-            # df = pd.DataFrame(data=[tqqq_ticker, tqqq_display])
+            tqqq_display = str(tqqq_target)
+            df = pd.DataFrame(data=[tqqq_ticker, tqqq_display])
             # print(df)
 
         elif ticker_input == "TQQQ":
@@ -317,10 +315,8 @@ def dropdown_fn():
             nq_target = target
             tqqq_target = ((nq_target / nq_current - 1) * 3 + 1) * tqqq_current
             # print(tqqq_target)
-            # tqqq_display = str(tqqq_target)
-            tqqq_display = "{:.2f}".format(tqqq_target)
-            out_text = tqqq_display
-            # df = pd.DataFrame(data=[tqqq_ticker, tqqq_display])
+            tqqq_display = str(tqqq_target)
+            df = pd.DataFrame(data=[tqqq_ticker, tqqq_display])
             # print(df)
 
         elif ticker_input == "TNA":
@@ -342,10 +338,8 @@ def dropdown_fn():
             nq_target = target
             tqqq_target = ((nq_target / nq_current - 1) * 3 + 1) * tqqq_current
             # print(tqqq_target)
-            # tqqq_display = str(tqqq_target)
-            tqqq_display = "{:.2f}".format(tqqq_target)
-            out_text = tqqq_display
-            # df = pd.DataFrame(data=[tqqq_ticker, tqqq_display])
+            tqqq_display = str(tqqq_target)
+            df = pd.DataFrame(data=[tqqq_ticker, tqqq_display])
             # print(df)
 
         elif ticker_input == "FAS":
@@ -366,11 +360,9 @@ def dropdown_fn():
             nq_target = target
             tqqq_target = ((nq_target / nq_current - 1) * 3 + 1) * tqqq_current
             # print(tqqq_target)
-            # tqqq_display = str(tqqq_target)
-            tqqq_display = "{:.2f}".format(tqqq_target)
-            out_text = tqqq_display
-            # df = pd.DataFrame(data=[tqqq_ticker, tqqq_display])
+            tqqq_display = str(tqqq_target)
+            df = pd.DataFrame(data=[tqqq_ticker, tqqq_display])
             # print(df)
 
-        return render_template('output.html', arithmetic=out_text)
+        return df.to_html(header='true', table_id='table')
     return render_template('dropdown_ticker.html')
