@@ -153,7 +153,7 @@ def gauss_chart():
 
         # ticker = yf.Ticker(symbol)
 
-        ticker = details['ticker']
+        ticker = "NQ=F"
 
         # data = yf.download(tickers = ticker, start='2019-01-04', end='2021-06-09')
         data = yf.download(tickers=ticker, period="6mo", interval='1d')
@@ -293,8 +293,6 @@ def gauss_chart():
         forecast_df = symmetric_df.tail(last_row_select)
         # print(forecast_df)
 
-        text_y_position = forecast_df['high'].iloc[0] * 1.2
-
         fig1 = go.Figure(data=[go.Candlestick(x=df2.index,
                                               open=df2['open'],
                                               high=df2['high'],
@@ -428,9 +426,9 @@ def gauss_chart():
 
         text_spacer = 6
 
-        fig1.add_annotation(text='Actuals', x=last_row - text_spacer, y=text_y_position, showarrow=False, font_size=20)
+        fig1.add_annotation(text='Actuals', x=last_row - text_spacer, y=15000, showarrow=False, font_size=20)
 
-        fig1.add_annotation(text='Forecast', x=last_row + text_spacer, y=text_y_position, showarrow=False, font_size=20)
+        fig1.add_annotation(text='Forecast', x=last_row + text_spacer, y=15000, showarrow=False, font_size=20)
 
         graphJSON = json.dumps(fig1, cls=plotly.utils.PlotlyJSONEncoder)
 
